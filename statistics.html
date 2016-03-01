@@ -1,0 +1,71 @@
+<script type="text/javascript">
+    RED.nodes.registerType('statistics',{
+        category: 'function',
+        color: '#a6bbcf',
+        defaults: {
+            name: {value:""},
+	    stripFunction: {value:false}
+        },
+        inputs:1,
+        outputs:1,
+        icon: "function.png",
+        label: function() {
+            return this.name||"statistics";
+        }
+    });
+</script>
+
+<script type="text/x-red" data-template-name="statistics">
+    <div class="form-row">
+        <label for="node-input-name"><i class="icon-tag"></i> Name</label>
+        <input type="text" id="node-input-name" placeholder="Name">
+    </div>
+    <div class="form-row">
+        <label for="node-input-stripFunction"><i class="icon-tag"></i> Strip function from topic</label>
+        <input type="checkbox" id="node-input-stripFunction" placeholder="Strip">
+    </div>
+</script>
+
+<script type="text/x-red" data-help-name="statistics">
+    <p>Calculates statistics about input data. This is a wrapper around the <a href="http://simplestatistics.org/">Simple Statistics</a> library.</p>
+    <p>Normally, the value of msg.payload is saved into the data set.  When a message with a topic that ends in a statistical function name is received, that statistic is calculated and output as the msg.payload. For example, a message with the topic <i>data/mean</i> would output the mean of the data received so far. Optionally, the function name can be stripped from the topic. For statistical functions that require a parameter, the parameter is passed in using msg.payload.</p>
+    <p>The functions in the Simple Statistics library that are supported are:
+	<ul>
+		<li>bernoulliDistribution</li>
+		<li>chunk</li>
+                <li>ckmeans</li>
+                <li>cumulativeStdNormalProbability</li>
+                <li>errorFunction</li>
+                <li>factorial</li>
+                <li>inverseErrorFunction</li> 
+		<li>geometricMean</li>
+                <li>harmonicMean</li>
+                <li>interquartileRange</li>
+                <li>linearRegression</li>
+                <li>mad</li>
+                <li>max</li>
+                <li>mean</li>
+                <li>median</li>
+                <li>min</li>
+                <li>mode</li>
+                <li>poissonDistribution</li>
+                <li>probit</li>
+                <li>quantile</li>
+                <li>rootMeanSquare</li>
+                <li>sample</li>
+                <li>sampleSkewness</li>
+                <li>sampleStandardDeviation</li>
+                <li>standardDeviation</li>
+                <li>sum</li>
+                <li>sumNthPowerDeviations</li>
+                <li>tTest</li>
+		<li>uniqueCount</li>
+                <li>variance</li>
+	</ul>
+    In addition, two other functions are implemented:
+	<ul>
+		<li>size - returns the size of the data set</li>
+		<li>clear - clears the data set</li>
+	</ul>
+    </p>
+</script>

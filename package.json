@@ -1,0 +1,27 @@
+{
+    "name"         : "node-red-contrib-statistics",
+    "version"      : "1.0.0",
+    "description"  : "A node-red node to perfrom simple statistical operations on a flow.",
+    "dependencies": {
+	"simple-statistics": "1.*"
+    },
+    "author": {
+      "name": "Dean Cording",
+      "email": "dean@cording.id.au"
+    },
+    "license": "MIT",
+    "keywords": [ "node-red", "statistics" ],
+    "bugs": {
+      "url": "https://github.com/DeanCording/node-red-contrib-statistics/issues"
+    },
+    "homepage": "https://github.com/DeanCording/node-red-contrib-statistics",
+    "repository" :
+      { "type" : "git",
+        "url" : "https://github.com/DeanCording/node-red-contrib-statistics.git"
+      }
+    "node-red"     : {
+        "nodes": {
+            "statistics": "statistics.js"
+        }
+    }
+}

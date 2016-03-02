@@ -1,7 +1,7 @@
 {
     "name"         : "node-red-contrib-statistics",
     "version"      : "1.0.0",
-    "description"  : "A node-red node to perfrom simple statistical operations on a flow.",
+    "description"  : "A node-red node to perform simple statistical operations on a flow.",
     "dependencies": {
 	"simple-statistics": "1.*"
     },

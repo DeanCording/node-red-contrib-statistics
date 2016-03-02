@@ -18,8 +18,8 @@
     "repository" :
       { "type" : "git",
         "url" : "https://github.com/DeanCording/node-red-contrib-statistics.git"
-      }
-    "node-red"     : {
+      },
+    "node-red" : {
         "nodes": {
             "statistics": "statistics.js"
         }

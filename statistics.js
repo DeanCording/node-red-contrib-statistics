@@ -48,7 +48,7 @@ module.exports = function(RED) {
 		case 'cumulativeStdNormalProbability':
 		case 'errorFunction':
 		case 'factorial':
-		case 'inverseErrorFunction': 
+		case 'inverseErrorFunction':
 		case 'poissonDistribution':
 		case 'probit':
 
@@ -65,13 +65,13 @@ module.exports = function(RED) {
                 case 'geometricMean':
                 case 'harmonicMean':
                 case 'interquartileRange':
-		case 'linearRegression':
-		case 'mad':
+		case 'medianAbsoluteDeviation':
 		case 'max':
                 case 'mean':
 		case 'median':
 		case 'min':
 		case 'mode':
+                case 'product':
 		case 'rootMeanSquare':
 		case 'sampleSkewness':
 		case 'sampleStandardDeviation':

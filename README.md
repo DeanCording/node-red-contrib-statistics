@@ -20,8 +20,7 @@ The functions in the Simple Statistics library that are supported are:
 - geometricMean
 - harmonicMean
 - interquartileRange
-- linearRegression
-- mad
+- medianAbsoluteDeviation
 - max
 - mean
 - median
@@ -29,6 +28,7 @@ The functions in the Simple Statistics library that are supported are:
 - mode
 - poissonDistribution
 - probit
+- product
 - quantile
 - rootMeanSquare
 - sample

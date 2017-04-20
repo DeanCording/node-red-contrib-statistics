@@ -46,6 +46,6 @@ In addition, two other functions are implemented:
 - size - returns the size of the data set
 - clear - clears the data set
 
-For more detailed information about the functions see the [Simple Statistics API documentation](http://http://simplestatistics.org/docs/).
+For more detailed information about the functions see the [Simple Statistics API documentation](http://simplestatistics.org/docs/).
 
 

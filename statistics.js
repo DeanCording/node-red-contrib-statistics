@@ -1,5 +1,5 @@
 /**
- * Copyright 2016 Dean Cording
+ * Copyright 2018 Dean Cording
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,106 +17,153 @@
 module.exports = function(RED) {
 
     var statistics = require('simple-statistics');
+    var util = require('util');
 
 
     function StatisticsNode(config) {
         RED.nodes.createNode(this,config);
-	this.stripFunction = config.stripFunction;
+
         var node = this;
+
+        node.stripFunction = (config.stripFunction != undefined) ? config.stripFunction : true;
+        node.inputField = config.inputField || "payload";
+        node.inputFieldType = config.inputFieldType || "msg";
+        node.resultField = config.resultField || "payload";
+        node.resultFieldType = config.resultFieldType || "msg";
+        node.parameterField = config.parameterField || "payload";
+        node.parameterFieldType = config.parameterFieldType || "msg";
+        node.resultOnly = (config.resultOnly != undefined) ? config.resultOnly : true;
+
+        node.data= [];
+
+        var setNodeProperty = function(field, type, node, msg, value) {
+            if (type === 'msg') {
+                RED.util.setMessageProperty(msg,field,value);
+            } else if (type === 'flow') {
+                node.context().flow.set(field,value);
+            } else if (type === 'global') {
+                node.context().global.set(field,value);
+            }
+        };
+
+
+        var saveData = function(value) {
+            if (value != undefined) {
+                if (!isNaN(value)) {
+                    node.data.push(value);
+                }
+            }
+        };
+
+
         this.on('input', function(msg) {
 
-            var context = this.context();
+            var funcIndex = msg.topic.lastIndexOf('/');
 
-            var data = context.get('data') || [];
-	    var funcIndex = msg.topic.lastIndexOf('/');
             var func = msg.topic.slice(funcIndex+1);
 
-	    if (node.stripFunction && (funcIndex != -1)) {
-		msg.topic = msg.topic.substring(0,funcIndex);
-	    }
+            if (node.stripFunction && (funcIndex != -1)) {
+                msg.topic = msg.topic.substring(0,funcIndex);
+            }
+
+            var value = parseFloat(RED.util.evaluateNodeProperty(
+                                    node.inputField, node.inputFieldType, node, msg));
+
+            var result;
+            var parameter;
 
             switch (func) {
-		case 'clear':
-		    context.set('data', []);
-		    return null;
+                case 'clear':
+                    node.data =[];
+                    break;
 
-		case 'size':
-		    msg.payload = data.length;
-		    break;
+                case 'size':
+                case 'count':
+                    saveData(value);
+                    result = node.data.length;
+                    break;
 
-		case 'bernoulliDistribution':
-		case 'cumulativeStdNormalProbability':
-		case 'errorFunction':
-		case 'factorial':
-		case 'inverseErrorFunction':
-		case 'poissonDistribution':
-		case 'probit':
-
-                    var value = parseFloat(msg.payload);
-                    if (isNaN(value)) {
-                        node.warn("Non-numeric data received: " + msg.payload);
-			return null;
+                case 'bernoulliDistribution':
+                case 'cumulativeStdNormalProbability':
+                case 'errorFunction':
+                case 'factorial':
+                case 'inverseErrorFunction':
+                case 'poissonDistribution':
+                case 'probit':
+                    parameter = parseFloat(
+                        RED.util.evaluateNodeProperty(node.parameterField,
+                                                      node.parameterFieldType, node, msg));
+                    if (isNaN(parameter)) {
+                        node.warn("Non-numeric data received: " + parameter);
+                        return null;
                     } else {
-			msg.payload = statistics[func](value);
+                        result = statistics[func](parameter);
                     }
-		    break;
-
-
+                    break;
                 case 'geometricMean':
                 case 'harmonicMean':
                 case 'interquartileRange':
-		case 'medianAbsoluteDeviation':
-		case 'max':
+                case 'medianAbsoluteDeviation':
+                case 'max':
                 case 'mean':
-		case 'median':
-		case 'min':
-		case 'mode':
+                case 'median':
+                case 'min':
+                case 'mode':
                 case 'product':
-		case 'rootMeanSquare':
-		case 'sampleSkewness':
-		case 'sampleStandardDeviation':
-		case 'standardDeviation':
-		case 'sum':
-		case 'variance':
+                case 'rootMeanSquare':
+                case 'sampleKurtosis':
+                case 'sampleSkewness':
+                case 'sampleStandardDeviation':
+                case 'standardDeviation':
+                case 'sum':
+                case 'variance':
 
-		    msg.payload = statistics[func](data);
+                    saveData(value);
+                    result = statistics[func](node.data);
                     break;
 
-		case 'sortedUniqueCount':
-		case 'uniqueCount':
+                case 'uniqueCountSorted':
+                case 'uniqueCount':
 
-		    msg.payload = statistics.sortedUniqueCount(data.sort(function(a, b){return a>b}));
-		    break;
+                    saveData(value);
+                    result = statistics.uniqueCountSorted(node.data.sort(function(a, b){return a>b;}));
+                    break;
 
-		case 'chunk':
-		case 'ckmeans':
-		case 'quantile':
-		case 'sample':
-		case 'sumNthPowerDeviations':
-		case 'tTest':
-                   var value = parseFloat(msg.payload);
-                    if (isNaN(value)) {
-                        node.warn("Non-numeric data received: " + msg.payload);
+                case 'chunk':
+                case 'ckmeans':
+                case 'quantile':
+                case 'sample':
+                case 'sumNthPowerDeviations':
+                case 'tTest':
+
+                    if (node.parameterField != node.inputField ||
+                            node.parameterFieldType != node.inputFieldType ) {
+                        saveData(value);
+                    }
+
+                    parameter = parseFloat(RED.util.evaluateNodeProperty(node.parameterField,
+                                                      node.parameterFieldType, node, msg));
+                    if (isNaN(parameter)) {
+                        node.warn("Non-numeric data received: " + parameter);
                         return null;
                     } else {
-                        msg.payload = statistics[func](data,value);
+                        result = statistics[func](node.data,parameter);
                     }
                     break;
 
+                default:
+                    saveData(value);
+                    if (node.resultOnly) {
+                        return null;
+                    }
+            }
 
-	        default:
-		    var value = parseFloat(msg.payload);
-            	    if (isNaN(value)) {
-                        node.warn("Non-numeric data received: " + msg.payload);
-                    } else {
-                        data.push(value);
-                        context.set('data', data);
-		    }
-                    // Swallows the message
-                    return null;
-	    }
+            if (result != undefined) {
+                setNodeProperty(node.resultField, node.resultFieldType, node, msg, result);
+            }
+
             node.send(msg);
         });
     }
     RED.nodes.registerType("statistics",StatisticsNode);
-}
+};

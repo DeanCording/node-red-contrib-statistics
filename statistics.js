@@ -25,16 +25,19 @@ module.exports = function(RED) {
 
         var node = this;
 
+        node.dataSetSize = ((config.dataSetSize != undefined) ? config.dataSetSize : 0) * 1;
         node.stripFunction = (config.stripFunction != undefined) ? config.stripFunction : true;
         node.inputField = config.inputField || "payload";
         node.inputFieldType = config.inputFieldType || "msg";
         node.resultField = config.resultField || "payload";
         node.resultFieldType = config.resultFieldType || "msg";
-        node.parameterField = config.parameterField || "payload";
+        node.parameterField = config.parameterField || "";
         node.parameterFieldType = config.parameterFieldType || "msg";
         node.resultOnly = (config.resultOnly != undefined) ? config.resultOnly : true;
 
         node.data= [];
+
+        if (node.dataSetSize < 0) node.dataSetSize = 0;
 
         var setNodeProperty = function(field, type, node, msg, value) {
             if (type === 'msg') {
@@ -49,8 +52,21 @@ module.exports = function(RED) {
 
         var saveData = function(value) {
             if (value != undefined) {
-                if (!isNaN(value)) {
-                    node.data.push(value);
+                if (Array.isArray(value)) {
+                    value.forEach(function (element) {
+                        saveData(element);
+                    });
+                } else {
+                    value = parseFloat(value);
+                    if (!isNaN(value)) {
+                        node.data.push(value);
+
+                        if (node.dataSetSize > 0) {
+                            while (node.data.length > node.dataSetSize) {
+                                node.data.shift();
+                            }
+                        }
+                    }
                 }
             }
         };
@@ -66,8 +82,7 @@ module.exports = function(RED) {
                 msg.topic = msg.topic.substring(0,funcIndex);
             }
 
-            var value = parseFloat(RED.util.evaluateNodeProperty(
-                                    node.inputField, node.inputFieldType, node, msg));
+            var value = RED.util.evaluateNodeProperty(node.inputField, node.inputFieldType, node, msg);
 
             var result;
             var parameter;
@@ -75,6 +90,11 @@ module.exports = function(RED) {
             switch (func) {
                 case 'clear':
                     node.data =[];
+                    break;
+
+                case 'dump':
+                    saveData(value);
+                    result = Array.from(node.data);
                     break;
 
                 case 'size':
@@ -90,8 +110,7 @@ module.exports = function(RED) {
                 case 'inverseErrorFunction':
                 case 'poissonDistribution':
                 case 'probit':
-                    parameter = parseFloat(
-                        RED.util.evaluateNodeProperty(node.parameterField,
+                    parameter = parseFloat(RED.util.evaluateNodeProperty(node.parameterField,
                                                       node.parameterFieldType, node, msg));
                     if (isNaN(parameter)) {
                         node.warn("Non-numeric data received: " + parameter);

@@ -4,11 +4,12 @@
         color: '#a6bbcf',
         defaults: {
             name: {value:""},
-            inputField: {value: "payload"},
+            dataSetSize: {value: 0, validate: RED.validators.number(), required: true},
+            inputField: {value: "payload", required: true},
             inputFieldType: {value: "msg"},
-            resultField: {value: "payload"},
+            resultField: {value: "payload", required: true},
             resultFieldType: {value: "msg"},
-            parameterField: {value: "payload"},
+            parameterField: {value: ""},
             parameterFieldType: {value: "msg"},
             stripFunction: {value:false},
             resultOnly: {value:true}
@@ -66,6 +67,10 @@
         <input type="text" id="node-input-name" placeholder="Name">
     </div>
     <div class="form-row">
+        <label for="node-dataSetSize"><i class="icon-tag"></i> Data Set Size</label>
+        <input type="text" id="node-input-dataSetSize" placeholder="0">
+    </div>
+    <div class="form-row">
         <label for="node-input-inputField"><i class="fa fa-edit"></i> Input Property</label>
         <input type="text" id="node-input-inputField" placeholder="Input" style="width:250px;">
         <input type="hidden" id="node-input-inputFieldType">
@@ -97,6 +102,8 @@
         <dl class="message-properties">
             <dt>name <span class="property-type">string</span></dt>
             <dd> the node name to display in the editor. </dd>
+            <dt>data set size <span class="property-type">integer</span></dt>
+            <dd>maximum number of data elements to store</dd>
             <dt>input property <span class="property-type">property</span></dt>
             <dd> the property containing the input data item. </dd>
             <dt>result property <span class="property-type">property</span></dt>
@@ -111,9 +118,9 @@
 
     <h3>Input</h3>
         <dl class="message-properties">
-            <dt><i>input property</i> <span class="property-type">float</span></dt>
+            <dt><i>input property</i> <span class="property-type">number | array of number</span></dt>
             <dd> the data item to be added to the data set.</dd>
-            <dt><i>parameter property</i> <span class="property-type">float</span></dt>
+            <dt><i>parameter property</i> <span class="property-type">number</span></dt>
             <dd> the value to be used as a function parameter if required.</dd>
         </dl>
 
@@ -126,7 +133,12 @@
         The contents of input messages are passed through unchanged.
 
     <h3>Details</h3>
-        <p>Normally, the value of <code>input property</code> is saved into the data set.  When a message with a topic that ends in a statistical function name is received, that statistic is calculated and output to the <code>result property</code>. For example, a message with the topic <i>data/mean</i> would output the mean of the data received so far. Optionally, the function name can be stripped from the topic. For statistical functions that require a parameter, the parameter is passed in using the <code>parameter property</code>.</p>
+        <p>The value of <code>input property</code> is saved into the data set.  The
+        <code>input property</code> may also contain an array of values which will be saved into the
+        data set.  If <code>data set size</code> is greater that 0 then the size of the data set will be
+        limited to the numer of elements specified, with the oldest elements dropped first.</p>
+
+        <p>When a message with a topic that ends in a statistical function name is received, that statistic is calculated and output to the <code>result property</code>. For example, a message with the topic <i>data/mean</i> would output the mean of the data received so far. Optionally, the function name can be stripped from the topic. For statistical functions that require a parameter, the parameter is passed in using the <code>parameter property</code>.</p>
         <p>The functions in the Simple Statistics library that are supported are:
         <ul>
             <li>bernoulliDistribution</li>
@@ -158,13 +170,14 @@
                     <li>sum</li>
                     <li>sumNthPowerDeviations</li>
                     <li>tTest</li>
-            <li>uniqueCount</li>
+                    <li>uniqueCount</li>
                     <li>variance</li>
         </ul>
-        In addition, two other functions are implemented:
+        In addition, three other functions are implemented:
         <ul>
             <li>size - returns the size of the data set</li>
             <li>clear - clears the data set</li>
+            <li>dump - returns the data set in an array</li>
         </ul>
         </p>
 </script>

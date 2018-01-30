@@ -91,6 +91,9 @@ module.exports = function(RED) {
                 case 'clear':
                     node.data =[];
                     saveData(value);
+                    if (node.resultsOnly) {
+                        return null;
+                    }
                     break;
 
                 case 'dump':

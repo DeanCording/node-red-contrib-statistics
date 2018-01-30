@@ -90,6 +90,7 @@ module.exports = function(RED) {
             switch (func) {
                 case 'clear':
                     node.data =[];
+                    return null;
                     break;
 
                 case 'dump':

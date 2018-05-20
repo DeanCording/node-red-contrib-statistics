@@ -3,7 +3,7 @@
   "version": "2.1.4",
   "description": "A node-red node to perform simple statistical operations on a flow.",
   "dependencies": {
-    "simple-statistics": "5.2.*"
+    "simple-statistics": "6.0.*"
   },
   "author": {
     "name": "Dean Cording",

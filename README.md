@@ -19,9 +19,12 @@ The functions in the Simple Statistics library that are supported are:
 - chunk
 - ckmeans
 - cumulativeStdNormalProbability
+- equalIntervalBreaks
 - errorFunction
+- extent
 - factorial
 - inverseErrorFunction
+- gamma
 - geometricMean
 - harmonicMean
 - interquartileRange
@@ -35,11 +38,14 @@ The functions in the Simple Statistics library that are supported are:
 - probit
 - product
 - quantile
+- quantileRank
 - rootMeanSquare
 - sample
-- smapleKurtosis
+- sampleWithReplacement
+- sampleKurtosis
 - sampleSkewness
 - sampleStandardDeviation
+- shuffle
 - standardDeviation
 - sum
 - sumNthPowerDeviations
@@ -47,11 +53,13 @@ The functions in the Simple Statistics library that are supported are:
 - uniqueCount
 - variance
 
-In addition, two other functions are implemented:
+In addition, three other functions are implemented:
 
 - size - returns the size of the data set
 - clear - clears the data set
 - dump - dumps the data set in an array
+
+These three functions can also contain a data item or array of data items which are added to the data set before calculating the result for `size` or `dump`, or after the data set is cleared for `clear`.
 
 For more detailed information about the functions see the [Simple Statistics API documentation](http://simplestatistics.org/docs/).
 

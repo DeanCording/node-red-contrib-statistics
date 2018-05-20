@@ -19,6 +19,15 @@ module.exports = function(RED) {
     var statistics = require('simple-statistics');
     var util = require('util');
 
+    var setNodeProperty = function(field, type, node, msg, value) {
+        if (type === 'msg') {
+            RED.util.setMessageProperty(msg,field,value);
+        } else if (type === 'flow') {
+            node.context().flow.set(field,value);
+        } else if (type === 'global') {
+            node.context().global.set(field,value);
+        }
+    };
 
     function StatisticsNode(config) {
         RED.nodes.createNode(this,config);
@@ -38,16 +47,6 @@ module.exports = function(RED) {
         node.data= [];
 
         if (node.dataSetSize < 0) node.dataSetSize = 0;
-
-        var setNodeProperty = function(field, type, node, msg, value) {
-            if (type === 'msg') {
-                RED.util.setMessageProperty(msg,field,value);
-            } else if (type === 'flow') {
-                node.context().flow.set(field,value);
-            } else if (type === 'global') {
-                node.context().global.set(field,value);
-            }
-        };
 
 
         var saveData = function(value) {
@@ -107,10 +106,12 @@ module.exports = function(RED) {
                     result = node.data.length;
                     break;
 
+                // Single parameter functions
                 case 'bernoulliDistribution':
                 case 'cumulativeStdNormalProbability':
                 case 'errorFunction':
                 case 'factorial':
+                case 'gamma':
                 case 'inverseErrorFunction':
                 case 'poissonDistribution':
                 case 'probit':
@@ -123,6 +124,9 @@ module.exports = function(RED) {
                         result = statistics[func](parameter);
                     }
                     break;
+                    
+                // Simple data statistics
+                case 'extent':
                 case 'geometricMean':
                 case 'harmonicMean':
                 case 'interquartileRange':
@@ -137,6 +141,7 @@ module.exports = function(RED) {
                 case 'sampleKurtosis':
                 case 'sampleSkewness':
                 case 'sampleStandardDeviation':
+                case 'shuffle':
                 case 'standardDeviation':
                 case 'sum':
                 case 'variance':
@@ -152,10 +157,14 @@ module.exports = function(RED) {
                     result = statistics.uniqueCountSorted(node.data.sort(function(a, b){return a>b;}));
                     break;
 
+                // Parameter data statistics
                 case 'chunk':
                 case 'ckmeans':
+                case 'equalIntervalBreaks':
                 case 'quantile':
+                case 'quantileRank':
                 case 'sample':
+                case 'sampleWithReplacement':
                 case 'sumNthPowerDeviations':
                 case 'tTest':
 
@@ -174,6 +183,7 @@ module.exports = function(RED) {
                     }
                     break;
 
+                // Data item
                 default:
                     saveData(value);
                     if (node.resultOnly) {

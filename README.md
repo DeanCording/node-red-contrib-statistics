@@ -17,8 +17,10 @@ To get started, you can try this simple example to sum an array of random values
 
 1. Create an `[inject]` node to trigger 5 `[random]` nodes, and feed them into a single `[group]` node.
 2. Configure the `[group]` node to use `mode: manual` and `to create: an Array`. This will combine the 5 values into a single list. e.g. `[1,6,9,3,4]`
-3. Connect the output of the `[group]` into a `[change]` node that sets 'msg.topic' to the name of the desired function. e.g `sum`
+3. Connect the output of the `[group]` into a `[change]` node that sets `msg.topic` to the name of the desired function. e.g `sum`
 4. The join the output of the `[change]` node to the input of the `[statistics]` node. Done!
+
+See the list below for available functions, and simply swap `sum` in the `[change]` node for your desired function.
 
 
 ![Image of example flow](node_red_statistics_example.jpg)
